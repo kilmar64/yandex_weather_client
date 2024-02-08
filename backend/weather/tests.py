@@ -51,3 +51,16 @@ class ServicesTestCase(TestCase):
 
         self.assertIsNone(city_not_update.temp)
         self.assertIsNotNone(city_update.temp)
+
+
+class WeatherViewTestCase(TestCase):
+    fixtures = ['weather/fixtures/City.json']
+
+    def test_weather_view(self):
+        response_404 = self.client.get('/weather?city=NotExists')
+        response_moscow = self.client.get('/weather?city=Москва')
+
+        self.assertEqual(response_404.status_code, 404)
+        self.assertEqual(response_moscow.status_code, 200)
+        self.assertEqual(response_moscow.headers['Content-Type'], 'application/json')
+        self.assertEqual(response_moscow.data['name'], 'москва')

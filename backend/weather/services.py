@@ -4,7 +4,7 @@ Services module for main business logic
 
 import pytz
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 from django.conf import settings
@@ -43,7 +43,9 @@ def check_if_city_needs_to_fetch(city: City) -> bool:
     Checks saved fetch time and returns if it is old
     '''
     time_now = datetime.now().astimezone(pytz.utc) # Get current time in UTC timezone
-    return city.last_fetch_time is None or ((time_now - city.last_fetch_time).total_seconds() / 60) > 30
+    time_old = time_now - timedelta(minutes=30)
+
+    return city.last_fetch_time is None or city.last_fetch_time < time_old
 
 
 def update_weather_in_city(city: City) -> City:

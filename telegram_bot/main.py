@@ -1,6 +1,7 @@
 import asyncio
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.filters.command import Command
+from aiogram.filters import StateFilter
 
 import config
 import handlers
@@ -17,8 +18,8 @@ async def start_bot():
 
     dp.startup.register(bot_init)
     dp.message.register(handlers.start, Command('start'))
-    dp.message.register(handlers.help, Command('help'))
-    dp.message.register(handlers.get_weather)
+    dp.message.register(handlers.set_search_state, F.text.lower() == 'узнать погоду')
+    dp.message.register(handlers.get_weather, StateFilter('SearchCity:searching_city'))
 
     try:
         await dp.start_polling(bot)

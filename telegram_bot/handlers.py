@@ -1,20 +1,27 @@
 import aiohttp
 from aiogram import Bot
-from aiogram.types import Message
+from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
+from aiogram.fsm.context import FSMContext
 
 import config
 import messages
+import states
 
 
-async def start(message: Message, bot: Bot):
-    await message.answer(messages.START)
+async def start(message: Message, bot: Bot, state: FSMContext):
+    btn = KeyboardButton(text='Узнать погоду')
+    kb = ReplyKeyboardMarkup(keyboard=[[btn]], resize_keyboard=True)
+
+    await state.set_state(states.SearchCity.not_searching_city)
+    await message.answer(messages.START, reply_markup=kb)
 
 
-async def help(message: Message, bot: Bot):
-    await message.answer(messages.HELP)
+async def set_search_state(message: Message, bot: Bot, state: FSMContext):
+    await state.set_state(states.SearchCity.searching_city)
+    await message.answer(messages.INPUT_PROMPT)
 
 
-async def get_weather(message: Message, bot: Bot):
+async def get_weather(message: Message, bot: Bot, state: FSMContext):
     city = str(message.text)
     status = 404
     response = {}

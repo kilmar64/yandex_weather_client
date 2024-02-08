@@ -64,6 +64,7 @@ def update_weather_in_city(city: City) -> City:
         wind_speed = int(fetched_data.get('wind_speed'))
 
         # Update actual model
+        city.last_fetch_time = datetime.now().astimezone(pytz.utc)
         city.temp = temp
         city.pressure = pressure
         city.wind_speed = wind_speed

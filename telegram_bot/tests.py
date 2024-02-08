@@ -11,17 +11,20 @@ class HandlersTestCase(unittest.IsolatedAsyncioTestCase):
         Calls bot handler with data
         '''
         message_mock = AsyncMock(text=data)
-        bot_mock = AsyncMock
-        await handler(message_mock, bot_mock)
+        bot_mock = AsyncMock()
+        state_mock = AsyncMock()
+        await handler(message_mock, bot=bot_mock, state=state_mock)
         return message_mock
 
     async def test_start(self):
         msg = await self.bot_call(handlers.start, '/start')
-        msg.answer.assert_awaited_with('Бот для получения текущей погоды\nВведите название города')
+        response_data = msg.answer.call_args[0][0]
 
-    async def test_help(self):
-        msg = await self.bot_call(handlers.help, '/help')
-        msg.answer.assert_awaited_with('Напишите название города на русском языке, чтобы получить текущую погоду')
+        self.assertEqual(response_data, 'Бот для получения текущей погоды')
+
+    async def test_set_search_state(self):
+        msg = await self.bot_call(handlers.set_search_state, 'Узнать погоду')
+        msg.answer.assert_awaited_with('Введите город')
 
     async def test_get_weather(self):
         msg = await self.bot_call(handlers.get_weather, 'not a city')

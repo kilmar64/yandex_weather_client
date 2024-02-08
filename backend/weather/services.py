@@ -54,8 +54,6 @@ def update_weather_in_city(city: City) -> City:
     '''
 
     if check_if_city_needs_to_fetch(city):
-        print('Request to Yandex') # debug
-
         fetched_data = get_yandex_weather(city.lat, city.lon)
         if not fetched_data:
             return city
